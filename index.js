@@ -1,36 +1,47 @@
 const express = require('express');
 const axios = require('axios');
 const path = require('path');
-const cors = require('cors'); // ✅ Import CORS
+const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ✅ Enable CORS for all routes
+// ✅ Enable CORS and JSON parsing
 app.use(cors());
-
-// ✅ Parse JSON request bodies
 app.use(express.json());
 
-// ✅ Serve static files (HTML, CSS, etc.)
+// ✅ Serve static files
 app.use(express.static(__dirname));
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'test-chat.html')));
+app.get('/widget', (req, res) => res.sendFile(path.join(__dirname, 'chat-widget.html')));
 
-// ✅ Serve chat UIs
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'test-chat.html'));
-});
+// ✅ In-memory tracker (per session — you can swap this out with real user tracking later)
+let sessionCounter = 0;
 
-app.get('/widget', (req, res) => {
-  res.sendFile(path.join(__dirname, 'chat-widget.html'));
-});
-
-// ✅ Chat handler route
+// ✅ Chat endpoint
 app.post('/chat', async (req, res) => {
   const userMessage = req.body.message;
   const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
   if (!OPENAI_API_KEY) {
     return res.status(500).json({ error: 'Missing OpenAI API Key in environment.' });
+  }
+
+  sessionCounter++;
+
+  // ✅ End chat if user exceeds 15 messages (approx 8 messages from user + 7 bot replies)
+  if (sessionCounter >= 15) {
+    return res.json({
+      choices: [
+        {
+          message: {
+            role: 'assistant',
+            content:
+              "👋 Looks like we're wrapping up! For deeper help, tap the button above to request an estimate — Josh will take it from here.",
+          },
+        },
+      ],
+    });
   }
 
   try {
@@ -41,13 +52,15 @@ app.post('/chat', async (req, res) => {
         messages: [
           {
             role: 'system',
-            content: `You are Steady Scaling AI — a calm, emotionally intelligent consultant focused on helping people scale through smart spreadsheets, automation, and clean ad systems. You ask thoughtful questions to uncover where someone’s tracking, lead flow, follow-up, or backend is breaking down — whether that’s messy spreadsheets, manual processes, or unoptimized ads.
+            content: `You are Steady Scaling AI — a calm, emotionally intelligent consultant who helps people scale with smart spreadsheets, automation, and clean ad systems. Your job is to cut straight to the core of people’s operational problems and bring them into clear awareness.
 
-Never solve their problems directly. Just listen, reflect clearly, and guide them to tap the “Request an Estimate” button.
+Respond with direct, concise statements that highlight what’s breaking down — whether it’s tracking, lead flow, follow-up, or backend systems. Reflect what you notice: “It sounds like your [process] is causing friction,” or “That’s a classic sign of [problem].” Never solve their problems or give advice. Just help them see the issue clearly.
 
-If the conversation goes beyond 3–4 messages or the user seems warm, begin closing. Say something like: “We’re about to wrap up — tap the button above and Josh will take it from here.”
+Always guide them to tap the “Request an Estimate” button for next steps.
 
-Keep tone grounded, human, and confident. Use phrases like “Totally hear you” and “That’s super common.”`,
+If the conversation goes beyond 3–4 messages or the user seems ready, begin closing: “We’re about to wrap up — tap the button above and Josh will take it from here.”
+
+Keep your tone grounded, human, and confident. Use phrases like “Totally hear you” and “That’s super common.”`,
           },
           {
             role: 'user',
@@ -70,7 +83,7 @@ Keep tone grounded, human, and confident. Use phrases like “Totally hear you�
   }
 });
 
-// ✅ Start the server
+// ✅ Start server
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`✅ Steady Scaling AI is running on port ${PORT}`);
 });
