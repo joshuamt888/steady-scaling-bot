@@ -438,16 +438,37 @@
 
     // Toggle chat visibility
     function toggleChat() {
-      isOpen = !isOpen;
-      chatBox.classList.toggle('active', isOpen);
-      toggleBtn.style.backgroundColor = isOpen ? '#0C0A4A' : '#CD003B';
+  isOpen = !isOpen;
+  chatBox.classList.toggle('active', isOpen);
+  toggleBtn.style.backgroundColor = isOpen ? '#0C0A4A' : '#CD003B';
+
+  if (isOpen && messageCount === 0) {
+    addBotMessage("👋 Hi there! I'm Steady AI - your automation consultant. Where should we start?");
+    messageCount++;
+  }
+
+  // Resize parent iframe
+  if (isOpen) {
+    postResize(420, 700);
+  } else {
+    postResize(72, 72);
+  }
+
+  maintainScroll();
+}
+
+
+      function postResize(width, height) {
+      window.parent.postMessage({ type: 'resizeBot', width, height }, '*');
+      }
+
       
       if (isOpen && messageCount === 0) {
         addBotMessage("👋 Hi there! I'm Steady AI - your automation consultant. Where should we start?");
         messageCount++;
       }
       maintainScroll();
-    }
+    
 
     // Create message elements
     function createMessage(text, isUser) {
