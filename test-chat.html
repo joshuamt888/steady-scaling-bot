@@ -219,7 +219,7 @@
       flex: 1;
       border: none;
       padding: 1rem;
-      font-size: 0.95rem;
+      font-size: 16px !important;
       color: #0C0A4A;
       background: transparent;
       outline: none;
@@ -494,17 +494,18 @@
         loadingBubble = showLoading();
         
         // Simulate API call (replace with actual fetch)
-        const response = await new Promise(resolve => {
-          setTimeout(() => {
-            resolve({
-              reply: "This is a simulated response. In a real implementation, you would replace this with an actual API call to your backend."
-            });
-          }, 1500);
-        });
+        const response = await fetch('/chat', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ message: text })
+});
 
-        hideLoading(loadingBubble);
-        addBotMessage(response.reply);
-        messageCount++;
+const data = await response.json();
+hideLoading(loadingBubble);
+addBotMessage(data.choices?.[0]?.message?.content || "Sorry, something went wrong.");
+
 
         if (messageCount >= 4) {
           setTimeout(() => {
