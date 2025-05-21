@@ -1,24 +1,30 @@
 const express = require('express');
 const axios = require('axios');
 const path = require('path');
+const cors = require('cors'); // ✅ Import CORS
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ❌ No dotenv — you're using Railway env vars only
+// ✅ Enable CORS for all routes
+app.use(cors());
+
+// ✅ Parse JSON request bodies
 app.use(express.json());
 
-// ✅ Serve all static files (HTML, CSS, etc.)
+// ✅ Serve static files (HTML, CSS, etc.)
 app.use(express.static(__dirname));
 
-// ✅ Serve test and widget UIs
+// ✅ Serve chat UIs
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'test-chat.html'));
 });
+
 app.get('/widget', (req, res) => {
   res.sendFile(path.join(__dirname, 'chat-widget.html'));
 });
 
-// 💬 Chat handler
+// ✅ Chat handler route
 app.post('/chat', async (req, res) => {
   const userMessage = req.body.message;
   const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
@@ -41,7 +47,7 @@ Never solve their problems directly. Just listen, reflect clearly, and guide the
 
 If the conversation goes beyond 3–4 messages or the user seems warm, begin closing. Say something like: “We’re about to wrap up — tap the button above and Josh will take it from here.”
 
-Keep tone grounded, human, and confident. Use phrases like “Totally hear you” and “That’s super common.`,
+Keep tone grounded, human, and confident. Use phrases like “Totally hear you” and “That’s super common.”`,
           },
           {
             role: 'user',
@@ -51,21 +57,20 @@ Keep tone grounded, human, and confident. Use phrases like “Totally hear you�
       },
       {
         headers: {
-          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-          'Content-Type': 'application/json', // ✅ Added explicitly
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
         },
       }
     );
 
     res.json(response.data);
   } catch (error) {
-    // ✅ Better error logging
     console.error('OpenAI Error:', error.response?.data || error.message);
     res.status(500).json({ error: 'Error from AI server.' });
   }
 });
 
-// ✅ Start server
+// ✅ Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
