@@ -91,14 +91,14 @@
 
     /* Chat Messages Area */
     #chat-messages {
-  flex: 1;
-  padding: 1.5rem 1.5rem 2.5rem 1.5rem; /* 👈 more bottom padding */
-  overflow-y: auto;
-  background: #f8f9ff;
-  scroll-behavior: smooth;
-  display: flex;
-  flex-direction: column;
-}
+      flex: 1;
+      padding: 1.5rem;
+      overflow-y: auto;
+      background: #f8f9ff;
+      scroll-behavior: smooth;
+      display: flex;
+      flex-direction: column;
+    }
 
     /* Message Bubbles */
     .message {
@@ -379,9 +379,10 @@
       msg.className = `message ${isUser ? 'user-msg' : 'bot-msg'}`;
       
       const now = new Date();
-      msg.innerHTML = isUser
-  ? `${text.replace(/\n/g, '<br>')}` // user: no timestamp
-  : `${text.replace(/\n/g, '<br>')}<span class="message-time">${formatTime(now)}</span>`; // bot: timestamp
+      msg.innerHTML = `
+        ${text.replace(/\n/g, '<br>')}
+        <span class="message-time">${formatTime(now)}</span>
+      `;
       
       return msg;
     }
