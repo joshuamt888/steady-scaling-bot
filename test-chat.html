@@ -447,15 +447,19 @@
     messageCount++;
   }
 
-  // Resize parent iframe
-  if (isOpen) {
-    postResize(420, 700);
-  } else {
-    postResize(72, 72);
-  }
+  const isMobile = window.innerWidth <= 600;
+  const width = isOpen
+    ? (isMobile ? window.innerWidth : 420)
+    : 72;
+  const height = isOpen
+    ? (isMobile ? window.innerHeight : 700)
+    : 72;
 
+  // ✅ Tell parent to resize and update behavior
+  window.parent.postMessage({ type: 'resizeBot', width, height }, '*');
   maintainScroll();
 }
+
 
 
       function postResize(width, height) {
