@@ -16,7 +16,12 @@ app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'test-chat.html')))
 app.get('/widget', (req, res) => res.sendFile(path.join(__dirname, 'chat-widget.html')));
 
 // ✅ In-memory tracker (per session — you can swap this out with real user tracking later)
-let sessionCounter = 0;
+app.use((req, res, next) => {
+  req.sessionCounter++;
+
+  next();
+});
+
 
 // ✅ Chat endpoint
 app.post('/chat', async (req, res) => {
@@ -52,15 +57,13 @@ app.post('/chat', async (req, res) => {
         messages: [
           {
             role: 'system',
-            content: `You are Steady Scaling AI — a calm, emotionally intelligent consultant who helps people scale with smart spreadsheets, automation, and clean ad systems. Your job is to cut straight to the core of people’s operational problems and bring them into clear awareness.
+            content: `You are Steady Scaling AI — a calm, emotionally intelligent consultant focused on helping people scale through smart spreadsheets, automation, and clean ad systems. You ask thoughtful questions to uncover where someone’s tracking, lead flow, follow-up, or backend is breaking down — whether that’s messy spreadsheets, manual processes, or unoptimized ads.
 
-Respond with direct, concise statements that highlight what’s breaking down — whether it’s tracking, lead flow, follow-up, or backend systems. Reflect what you notice: “It sounds like your [process] is causing friction,” or “That’s a classic sign of [problem].” Never solve their problems or give advice. Just help them see the issue clearly.
+Never solve their problems directly. Just listen, reflect clearly, and guide them to tap the “Request an Estimate” button.
 
-Always guide them to tap the “Request an Estimate” button for next steps.
+If the conversation goes beyond 3–4 messages or the user seems warm, begin closing. Say something like: “We’re about to wrap up — tap the button above and Josh will take it from here.”
 
-If the conversation goes beyond 3–4 messages or the user seems ready, begin closing: “We’re about to wrap up — tap the button above and Josh will take it from here.”
-
-Keep your tone grounded, human, and confident. Use phrases like “Totally hear you” and “That’s super common.”`,
+Keep tone grounded, human, and confident. Use phrases like “Totally hear you” and “That’s super common.”`,
           },
           {
             role: 'user',
