@@ -4,28 +4,27 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ❌ No dotenv — you're using Railway env vars only
 app.use(express.json());
 
-// ✅ Serve static files (HTML, CSS, JS)
+// ✅ Serve all static files (HTML, CSS, etc.)
 app.use(express.static(__dirname));
 
-// ✅ Test route
+// ✅ Serve test and widget UIs
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'test-chat.html'));
 });
-
-// ✅ Widget embed route
 app.get('/widget', (req, res) => {
   res.sendFile(path.join(__dirname, 'chat-widget.html'));
 });
 
-// 💬 ChatGPT endpoint
+// 💬 Chat handler
 app.post('/chat', async (req, res) => {
   const userMessage = req.body.message;
+  const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
-  // ✅ Ensure API key exists
-  if (!process.env.OPENAI_API_KEY) {
-    return res.status(500).json({ error: 'API key not configured on server.' });
+  if (!OPENAI_API_KEY) {
+    return res.status(500).json({ error: 'Missing OpenAI API Key in environment.' });
   }
 
   try {
