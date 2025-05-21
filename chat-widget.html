@@ -510,7 +510,7 @@ addBotMessage(data.choices?.[0]?.message?.content || "Sorry, something went wron
         addBotMessage(response.reply);
         messageCount++;
 
-        if (messageCount >= 4) {
+        if (messageCount >= 8) {
           setTimeout(() => {
             addBotMessage("Ready to take the next step? Tap the button above to connect with our team.");
             setTimeout(toggleChat, 3000);
@@ -518,7 +518,6 @@ addBotMessage(data.choices?.[0]?.message?.content || "Sorry, something went wron
         }
       } catch (error) {
         hideLoading(loadingBubble);
-        addBotMessage("Connection issue - please try again.");
       }
     }
 
