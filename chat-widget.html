@@ -442,37 +442,22 @@
   chatBox.classList.toggle('active', isOpen);
   toggleBtn.style.backgroundColor = isOpen ? '#0C0A4A' : '#CD003B';
 
+  // Determine mobile vs desktop size
+  const isMobile = window.innerWidth <= 600;
+  const width = isOpen ? (isMobile ? window.innerWidth : 420) : 72;
+  const height = isOpen ? (isMobile ? window.innerHeight : 640) : 72;
+
+  // Tell parent to resize iframe
+  window.parent.postMessage({ type: 'resizeBot', width, height }, '*');
+
   if (isOpen && messageCount === 0) {
     addBotMessage("👋 Hi there! I'm Steady AI - your automation consultant. Where should we start?");
     messageCount++;
   }
 
-  const isMobile = window.innerWidth <= 600;
-  const width = isOpen
-    ? (isMobile ? window.innerWidth : 420)
-    : 72;
-  const height = isOpen
-    ? (isMobile ? window.innerHeight : 700)
-    : 72;
-
-  // ✅ Tell parent to resize and update behavior
-  window.parent.postMessage({ type: 'resizeBot', width, height }, '*');
   maintainScroll();
 }
 
-
-
-      function postResize(width, height) {
-      window.parent.postMessage({ type: 'resizeBot', width, height }, '*');
-      }
-
-      
-      if (isOpen && messageCount === 0) {
-        addBotMessage("👋 Hi there! I'm Steady AI - your automation consultant. Where should we start?");
-        messageCount++;
-      }
-      maintainScroll();
-    
 
     // Create message elements
     function createMessage(text, isUser) {
@@ -518,6 +503,7 @@
       try {
         loadingBubble = showLoading();
         
+        // Simulate API call (replace with actual fetch)
         const response = await fetch('/chat', {
   method: 'POST',
   headers: {
@@ -531,11 +517,7 @@ hideLoading(loadingBubble);
 addBotMessage(data.choices?.[0]?.message?.content || "Sorry, something went wrong.");
 
 
-        hideLoading(loadingBubble);
-        addBotMessage(response.reply);
-        messageCount++;
-
-        if (messageCount >= 8) {
+        if (messageCount >= 4) {
           setTimeout(() => {
             addBotMessage("Ready to take the next step? Tap the button above to connect with our team.");
             setTimeout(toggleChat, 3000);
@@ -543,6 +525,7 @@ addBotMessage(data.choices?.[0]?.message?.content || "Sorry, something went wron
         }
       } catch (error) {
         hideLoading(loadingBubble);
+        addBotMessage("Connection issue - please try again.");
       }
     }
 
