@@ -15,13 +15,8 @@ app.use(express.static(__dirname));
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'test-chat.html')));
 app.get('/widget', (req, res) => res.sendFile(path.join(__dirname, 'chat-widget.html')));
 
-// ✅ In-memory tracker (per session — you can swap this out with real user tracking later)
-app.use((req, res, next) => {
-  req.sessionCounter++;
-
-  next();
-});
-
+// ✅ TEMP: Simple in-memory counter (shared across all users for now)
+let sessionCounter = 0;
 
 // ✅ Chat endpoint
 app.post('/chat', async (req, res) => {
@@ -34,7 +29,7 @@ app.post('/chat', async (req, res) => {
 
   sessionCounter++;
 
-  // ✅ End chat if user exceeds 15 messages (approx 8 messages from user + 7 bot replies)
+  // ✅ End chat if user exceeds 15 messages (shared across all users for now)
   if (sessionCounter >= 15) {
     return res.json({
       choices: [
