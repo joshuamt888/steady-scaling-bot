@@ -374,7 +374,7 @@
     let lastDate = null;
 
     function updateMessageCounter() {
-  const remaining = 11 - messageCount;
+  const remaining = 8 - messageCount;
   const creditCounterEl = document.getElementById('credit-counter');
   if (!creditCounterEl) return;
 
@@ -517,8 +517,8 @@ async function sendMessage() {
   updateMessageCounter(); // ✅ Updates the counter in the UI
 
 
-  // Lock conversation after 11 messages
-  if (messageCount >= 11) {
+  // Lock conversation after 8 messages
+  if (messageCount >= 8) {
     addBotMessage("👋 Looks like we're wrapping up! For deeper help, tap the button above to request an estimate — Josh will take it from here.");
     msgSend.disabled = true;
     msgInput.disabled = true;
