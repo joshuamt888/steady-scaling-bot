@@ -68,9 +68,11 @@ Keep tone grounded, human, and confident. Use phrases like â€œTotally hear youâ€
       },
       {
         headers: {
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
+  Authorization: `Bearer ${OPENAI_API_KEY}`,
+  'Content-Type': 'application/json',
+  'OpenAI-Organization': process.env.OPENAI_ORG_ID
+},
+
       }
     );
 
